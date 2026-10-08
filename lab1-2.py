@@ -25,9 +25,15 @@ def get_keyword():
             print("Keyword cannot be less than 7 characters.")
             continue
 
+        in_romanian_alphabet = True
         for char in kw:
-            if char not in ALPHABET:
-                print("Keyword must include only letters of the Romanian alphabet")
+            if char.lower() not in ALPHABET.lower():
+                in_romanian_alphabet = False
+                break
+
+        if not in_romanian_alphabet:
+            print("Keyword must include only letters of the Romanian alphabet")
+            continue
 
         return kw.upper()
 
