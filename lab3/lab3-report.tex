@@ -1,0 +1,507 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage[left=2cm,right=1.5cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}
+\setlist{itemsep=1pt,topsep=4pt}
+
+\definecolor{codebackground}{HTML}{F7F7F7}
+\definecolor{codeframe}{HTML}{CBD5E1}
+\definecolor{terminalgreen}{HTML}{166534}
+\definecolor{terminalbackground}{HTML}{F3F8F4}
+\definecolor{headingblue}{HTML}{1E3A5F}
+\definecolor{commentgrey}{HTML}{6B7280}
+\definecolor{stringred}{HTML}{9F1239}
+
+\titleformat{\section}
+  {\normalfont\bfseries\centering\fontsize{13}{16}\selectfont}
+  {\thesection}{0.8em}{\MakeUppercase}
+\titleformat{name=\section,numberless}
+  {\normalfont\bfseries\centering\fontsize{13}{16}\selectfont}
+  {}{0pt}{\MakeUppercase}
+\titleformat{\subsection}
+  {\normalfont\bfseries\fontsize{12}{15}\selectfont}
+  {\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{0pt}{12pt}
+\titlespacing*{\subsection}{0pt}{10pt}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Cryptography and Security}}
+\fancyhead[R]{\small Laboratory Work No. 3}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+
+% romanian letters inside listings
+\lstset{
+  extendedchars=true,
+  literate=
+    {Ă}{{\u{A}}}1 {ă}{{\u{a}}}1
+    {Â}{{\^{A}}}1 {â}{{\^{a}}}1
+    {Î}{{\^{I}}}1 {î}{{\^{\i}}}1
+    {Ș}{{\textcommabelow{S}}}1 {ș}{{\textcommabelow{s}}}1
+    {Ț}{{\textcommabelow{T}}}1 {ț}{{\textcommabelow{t}}}1
+    {ş}{{\c{s}}}1 {Ş}{{\c{S}}}1
+    {ţ}{{\c{t}}}1 {Ţ}{{\c{T}}}1
+}
+
+\lstdefinestyle{code}{
+  language=Python,
+  basicstyle=\ttfamily\fontsize{8.5}{10.5}\selectfont,
+  keywordstyle=\color{headingblue}\bfseries,
+  commentstyle=\color{commentgrey}\itshape,
+  stringstyle=\color{stringred},
+  backgroundcolor=\color{codebackground},
+  frame=single,
+  rulecolor=\color{codeframe},
+  numbers=left,
+  numberstyle=\tiny\color{commentgrey},
+  numbersep=6pt,
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=4,
+  xleftmargin=0.6cm,
+  xrightmargin=0.15cm,
+  framexleftmargin=0.15cm,
+  framesep=5pt,
+  aboveskip=7pt,
+  belowskip=7pt,
+  captionpos=b
+}
+
+\lstdefinestyle{terminal}{
+  language={},
+  basicstyle=\ttfamily\fontsize{8.5}{10.5}\selectfont,
+  backgroundcolor=\color{terminalbackground},
+  frame=single,
+  rulecolor=\color{terminalgreen},
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=8,
+  xleftmargin=0.25cm,
+  xrightmargin=0.15cm,
+  framexleftmargin=0.15cm,
+  framesep=5pt,
+  aboveskip=7pt,
+  belowskip=7pt,
+  captionpos=b
+}
+
+% \shot{n}{caption} -- includes screenshots/sc-n.png (or sc-n.png next to this file)
+\newcommand{\shot}[2]{%
+  \begin{figure}[H]
+    \centering
+    \IfFileExists{screenshots/sc-#1.png}
+      {\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{screenshots/sc-#1}}
+      {\IfFileExists{sc-#1.png}
+        {\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{sc-#1}}
+        {\fbox{\parbox[c][3cm][c]{0.9\linewidth}{\centering\color{red}\bfseries missing sc-#1.png}}}}
+    \caption{#2}
+    \label{fig:sc-#1}
+  \end{figure}}
+
+\begin{document}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{center}
+    \includegraphics[width=3.4cm]{LOGO_UTM.png}\par
+    \vspace{0.25cm}
+
+    {\bfseries\fontsize{14}{17}\selectfont
+      MINISTRY OF EDUCATION AND RESEARCH\par
+      OF THE REPUBLIC OF MOLDOVA\par
+      Technical University of Moldova\par
+      Faculty of Computers, Informatics and Microelectronics\par
+      Department of Software Engineering and Automation\par
+    }
+
+    \vspace{1.4cm}
+    {\bfseries\fontsize{16}{19}\selectfont Sergiu Gherasim, FAF-242\par}
+
+    \vspace{1.4cm}
+    {\bfseries\fontsize{36}{40}\selectfont Report\par}
+    \vspace{0.25cm}
+    {\itshape\fontsize{20}{24}\selectfont Laboratory Work No. 3\par}
+    {\bfseries\itshape\fontsize{20}{24}\selectfont Cryptography and Security\par}
+
+    \vspace{1cm}
+    {\fontsize{20}{25}\selectfont Topic: Polyalphabetic Ciphers\par}
+    \vspace{0.2cm}
+    {\fontsize{15}{19}\selectfont The Playfair Cipher for the Romanian Alphabet\par}
+  \end{center}
+
+  \vfill
+  \begin{flushright}
+    {\fontsize{15}{18}\selectfont Checked by:}\par
+    \textbf{[Name Surname]}, \textit{university assistant}
+  \end{flushright}
+
+  \vfill
+  \begin{center}
+    {\bfseries\fontsize{14}{17}\selectfont Chi\c{s}in\u{a}u -- 2026}
+  \end{center}
+\end{titlepage}
+
+\pagenumbering{arabic}
+\setcounter{page}{2}
+\tableofcontents
+\newpage
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+A monoalphabetic cipher always replaces a letter with the same symbol, so the frequency distribution of the ciphertext is just the distribution of the language, shuffled. Polyalphabetic ciphers break this link: the same plaintext letter is encrypted differently depending on its position or its context, which flattens the distribution and leaves the cryptanalyst much less to work with.
+
+The Playfair cipher, invented by Charles Wheatstone in 1854 and promoted by Lord Playfair, belongs to this family in a particular way. It does not encrypt single letters but pairs of letters (digrams), so the substitution of a letter depends on its neighbour. This makes it one of the first ciphers that works on blocks, an idea that is central to modern block ciphers.
+
+The task of this laboratory work (task 3.1) is to implement Playfair for messages written in Romanian, an alphabet of 31 letters. Only the letters \texttt{A}--\texttt{Z}, \texttt{a}--\texttt{z} and the Romanian letters with diacritics are accepted; for any other character the user is shown the allowed range. The key must be at least 7 letters long. The user chooses the operation (encryption or decryption), enters the key and the message or the cryptogram, and receives the cryptogram or the decrypted message. Putting the spaces back into the decrypted text is done manually.
+
+The program is written in Python and is submitted as \texttt{playfair.py}.
+
+\newpage
+\section{The Playfair cipher}
+
+\subsection{The classic algorithm}
+
+The classic Playfair cipher uses a $5 \times 5$ matrix for the 26 letters of the English alphabet, with \texttt{J} merged into \texttt{I}. Encryption has three steps:
+
+\begin{enumerate}[label=\alph*)]
+  \item \textbf{Preparing the text.} The message is written in capital letters without spaces or punctuation and split into pairs. If a pair would contain the same letter twice, a rare letter (\texttt{Q}, \texttt{X} or \texttt{Z}) is inserted between them. If the final length is odd, one more letter is added at the end.
+  \item \textbf{Building the matrix.} Repeated letters are removed from the key, starting with their second occurrence. The matrix is filled row by row, first with the key and then with the remaining letters of the alphabet in order.
+  \item \textbf{Encrypting the pairs.} Each pair is replaced using the matrix:
+  \begin{itemize}
+    \item if the two letters are in different rows and columns, each is replaced by the letter in its own row but in the column of the other letter (the opposite corners of a rectangle);
+    \item if they are in the same row, each is replaced by the letter to its right, wrapping from the last column to the first;
+    \item if they are in the same column, each is replaced by the letter below it, wrapping from the last row to the first.
+  \end{itemize}
+\end{enumerate}
+
+Decryption uses the same matrix and the same rules, except that in the same row each letter is replaced by the one to its \emph{left}, and in the same column by the one \emph{above} it. The rectangle rule is its own inverse, so it does not change.
+
+\subsection{Adapting it to the Romanian alphabet}
+
+The Romanian alphabet has 31 letters:
+\[
+\texttt{A \u{A} \^A B C D E F G H I \^I J K L M N O P Q R S \textcommabelow{S} T \textcommabelow{T} U V W X Y Z}
+\]
+They do not fit in a $5 \times 5$ matrix. Merging letters would lose information, since \texttt{\u{A}}, \texttt{\^A} and \texttt{\^I} change the meaning of words. Instead I used a $6 \times 6$ matrix with 36 cells. The 31 letters fill the first 31 cells, and, as the laboratory guide allows, the 5 free cells are filled with other symbols: the digits \texttt{1}--\texttt{5}. A side effect is that the cryptogram may contain these digits, so the decryption input accepts them in addition to the letters.
+
+For the padding letter I used \texttt{X}, which is rare in Romanian. When the doubled letter is itself \texttt{X}, the padding letter is \texttt{Q}, so the pair never becomes \texttt{XX}.
+
+With the key \texttt{CRIPTOGRAFIE}, the repeated letters are removed and the key becomes \texttt{CRIPTOGAFE}. This gives the matrix below; it is used for all the examples in this report.
+
+\begin{table}[H]
+  \centering
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    C & R & I & P & T & O \\ \hline
+    G & A & F & E & \u{A} & \^A \\ \hline
+    B & D & H & \^I & J & K \\ \hline
+    L & M & N & Q & S & \textcommabelow{S} \\ \hline
+    \textcommabelow{T} & U & V & W & X & Y \\ \hline
+    Z & 1 & 2 & 3 & 4 & 5 \\ \hline
+  \end{tabular}
+  \caption{The $6 \times 6$ matrix for the key \texttt{CRIPTOGRAFIE}.}
+\end{table}
+
+\newpage
+\section{Implementation}
+
+\begin{lstlisting}[style=code,caption={playfair.py}]
+ALPHABET = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ"
+FILLERS = "12345"
+SIZE = 6
+PAD = "X"
+ALT_PAD = "Q"
+
+
+def normalize(text):
+    # cedilla variants are produced by some keyboards
+    text = text.replace("ş", "ș").replace("Ş", "Ș").replace("ţ", "ț").replace("Ţ", "Ț")
+    return text.upper().replace(" ", "")
+
+
+def find_invalid(text, allowed):
+    for char in text:
+        if char not in allowed:
+            return char
+    return None
+
+
+def get_operation():
+    while True:
+        operation = input("Choose E (encrypt) or D (decrypt): ").upper()
+
+        if operation in ("E", "D"):
+            return operation
+
+        print("Invalid operation. Enter E or D.")
+
+
+def get_key():
+    while True:
+        key = normalize(input("Enter the key (at least 7 letters): "))
+        invalid = find_invalid(key, ALPHABET)
+
+        if invalid is not None:
+            print(f"Invalid character: '{invalid}'.")
+            print("Only Romanian letters A-Z, a-z, Ă, Â, Î, Ș, Ț are allowed.")
+        elif len(key) < 7:
+            print("The key cannot be shorter than 7 letters.")
+        else:
+            return key
+
+
+def get_text(operation):
+    if operation == "E":
+        prompt, allowed = "Enter the message: ", ALPHABET
+        hint = "Only Romanian letters A-Z, a-z, Ă, Â, Î, Ș, Ț and spaces are allowed."
+    else:
+        prompt, allowed = "Enter the cryptogram: ", ALPHABET + FILLERS
+        hint = "Only Romanian letters A-Z, a-z, Ă, Â, Î, Ș, Ț, digits 1-5 and spaces are allowed."
+
+    while True:
+        text = normalize(input(prompt))
+        invalid = find_invalid(text, allowed)
+
+        if invalid is not None:
+            print(f"Invalid character: '{invalid}'.")
+            print(hint)
+        elif not text:
+            print("The text cannot be empty.")
+        elif operation == "D" and len(text) % 2 != 0:
+            print("The cryptogram must have an even number of characters.")
+        else:
+            return text
+
+
+def build_matrix(key):
+    chars = ""
+    for char in key + ALPHABET + FILLERS:
+        if char not in chars:
+            chars += char
+
+    matrix = [chars[i:i + SIZE] for i in range(0, SIZE * SIZE, SIZE)]
+    pos = {}
+    for r, row in enumerate(matrix):
+        for c, char in enumerate(row):
+            pos[char] = (r, c)
+
+    return matrix, pos
+
+
+def pad_for(char):
+    return ALT_PAD if char == PAD else PAD
+
+
+def prepare(text):
+    pairs = []
+    i = 0
+
+    while i < len(text):
+        a = text[i]
+
+        if i + 1 == len(text):
+            pairs.append(a + pad_for(a))
+            i += 1
+        elif text[i + 1] == a:
+            pairs.append(a + pad_for(a))
+            i += 1
+        else:
+            pairs.append(a + text[i + 1])
+            i += 2
+
+    return pairs
+
+
+def split_pairs(text):
+    return [text[i:i + 2] for i in range(0, len(text), 2)]
+
+
+def playfair(pairs, matrix, pos, step):
+    result = ""
+
+    for a, b in pairs:
+        r1, c1 = pos[a]
+        r2, c2 = pos[b]
+
+        if r1 == r2:
+            result += matrix[r1][(c1 + step) % SIZE] + matrix[r2][(c2 + step) % SIZE]
+        elif c1 == c2:
+            result += matrix[(r1 + step) % SIZE][c1] + matrix[(r2 + step) % SIZE][c2]
+        else:
+            result += matrix[r1][c2] + matrix[r2][c1]
+
+    return result
+
+
+operation = get_operation()
+key = get_key()
+text = get_text(operation)
+matrix, pos = build_matrix(key)
+
+print("\nMatrix:")
+for row in matrix:
+    print(" ".join(row))
+print()
+
+if operation == "E":
+    pairs = prepare(text)
+    print("Pairs: ", " ".join(pairs))
+    print("Result:", playfair(pairs, matrix, pos, 1))
+else:
+    pairs = split_pairs(text)
+    print("Pairs: ", " ".join(pairs))
+    print("Result:", playfair(pairs, matrix, pos, -1))
+\end{lstlisting}
+
+\subsection{Reading the input}
+
+All input goes through \texttt{normalize}, which turns the text into capital letters and removes the spaces. It also replaces the cedilla letters \texttt{\c{s}} and \texttt{\c{t}} with the comma-below letters \texttt{\textcommabelow{s}} and \texttt{\textcommabelow{t}}, because some keyboard layouts still produce the old forms, and without this step a correct Romanian word would be rejected.
+
+\texttt{find\_invalid} returns the first character that is not in the allowed set. Each of the three input functions asks again until the input is valid, and every rejection explains what is allowed:
+\begin{itemize}
+  \item \texttt{get\_operation} accepts only \texttt{E} or \texttt{D};
+  \item \texttt{get\_key} accepts only Romanian letters and at least 7 of them;
+  \item \texttt{get\_text} accepts only letters for a message. For a cryptogram it also accepts the digits \texttt{1}--\texttt{5}, because they are part of the matrix, and it requires an even length, because a cryptogram is always made of whole pairs.
+\end{itemize}
+
+\subsection{The matrix}
+
+\texttt{build\_matrix} walks over the key, then the alphabet, then the fillers, and keeps each character only the first time it appears. This removes the repeated letters of the key and appends the remaining letters in alphabetical order in a single loop. The resulting 36 characters are cut into 6 rows. A dictionary \texttt{pos} maps each character to its row and column, so the position of a letter is found directly instead of by searching the matrix.
+
+\subsection{Preparing the pairs}
+
+\texttt{prepare} reads the message from left to right. If the next two letters differ, they form a pair. If they are the same letter, only the first one is taken and the padding letter is added, so the second letter starts the next pair. A single letter left at the end is completed in the same way. As in the example of the laboratory guide, a doubled letter that falls across two pairs (such as \texttt{AC CE} in \texttt{ACCESUL}) is not padded, because the two letters are already in different pairs.
+
+\subsection{Encryption and decryption}
+
+\texttt{playfair} implements both operations with one parameter, \texttt{step}. For encryption it is $+1$ (to the right and down), for decryption $-1$ (to the left and up). The modulo 6 wraps the position around the edge of the matrix; in Python \texttt{-1 \% 6} is \texttt{5}, so stepping left from the first column correctly lands on the last one. The rectangle rule does not use \texttt{step} at all, since swapping the columns twice gives back the original pair.
+
+\newpage
+\section{Results}
+
+\subsection{Encryption}
+
+The message \texttt{Accesul la baza de date este interzis} was encrypted with the key \texttt{Criptografie}:
+
+\begin{lstlisting}[style=terminal,caption={Encryption run}]
+Choose E (encrypt) or D (decrypt): E
+Enter the key (at least 7 letters): Criptografie
+Enter the message: Accesul la baza de date este interzis
+
+Matrix:
+C R I P T O
+G A F E Ă Â
+B D H Î J K
+L M N Q S Ș
+Ț U V W X Y
+Z 1 2 3 4 5
+
+Pairs:  AC CE SU LX LA BA ZA DE DA TE ES TE IN TE RZ IS
+Result: GRPGMXSȚMGDG1GÎAMDPĂĂQPĂFVPĂC1TN
+\end{lstlisting}
+
+\shot{1}{Encrypting the message}
+
+The pairs show the preparation step at work. The two \texttt{L}s of \texttt{ACCESUL LA} would have formed the pair \texttt{LL}, so an \texttt{X} was inserted and the pair became \texttt{LX}. The two \texttt{C}s of \texttt{ACCESUL} were left alone because they fall into different pairs. A few pairs, checked by hand against the matrix:
+\begin{itemize}
+  \item \texttt{AC} $\rightarrow$ \texttt{GR}: rectangle rule. \texttt{A} is in row 2, column 2 and \texttt{C} in row 1, column 1, so \texttt{A} becomes the letter of row 2 in column 1 (\texttt{G}) and \texttt{C} the letter of row 1 in column 2 (\texttt{R}).
+  \item \texttt{IN} $\rightarrow$ \texttt{FV}: \texttt{I} and \texttt{N} are both in column 3, so each one is replaced by the letter below it.
+  \item \texttt{DA} $\rightarrow$ \texttt{MD}: same column again; \texttt{D} moves down to \texttt{M} and \texttt{A} moves down to \texttt{D}.
+  \item \texttt{ZA} $\rightarrow$ \texttt{1G}: \texttt{Z} is in the last row, so its rectangle corner is a filler cell and the cryptogram contains the digit \texttt{1}.
+\end{itemize}
+
+\subsection{Decryption}
+
+The cryptogram from the previous run was decrypted with the same key:
+
+\begin{lstlisting}[style=terminal,caption={Decryption run}]
+Choose E (encrypt) or D (decrypt): D
+Enter the key (at least 7 letters): Criptografie
+Enter the cryptogram: GRPGMXSȚMGDG1GÎAMDPĂĂQPĂFVPĂC1TN
+
+Matrix:
+C R I P T O
+G A F E Ă Â
+B D H Î J K
+L M N Q S Ș
+Ț U V W X Y
+Z 1 2 3 4 5
+
+Pairs:  GR PG MX SȚ MG DG 1G ÎA MD PĂ ĂQ PĂ FV PĂ C1 TN
+Result: ACCESULXLABAZADEDATEESTEINTERZIS
+\end{lstlisting}
+
+\shot{2}{Decrypting the cryptogram}
+
+The result is exactly the prepared text, including the inserted \texttt{X}. The final step is done manually, as the task requires: the padding letter is removed and the spaces are added back by reading the text, which gives \texttt{ACCESUL LA BAZA DE DATE ESTE INTERZIS}.
+
+\subsection{Invalid input}
+
+\begin{lstlisting}[style=terminal,caption={Rejected inputs}]
+Choose E (encrypt) or D (decrypt): X
+Invalid operation. Enter E or D.
+Choose E (encrypt) or D (decrypt): E
+Enter the key (at least 7 letters): cheie
+The key cannot be shorter than 7 letters.
+Enter the key (at least 7 letters): che1e lunga
+Invalid character: '1'.
+Only Romanian letters A-Z, a-z, Ă, Â, Î, Ș, Ț are allowed.
+Enter the key (at least 7 letters): Criptografie
+Enter the message: Salut, lume!
+Invalid character: ','.
+Only Romanian letters A-Z, a-z, Ă, Â, Î, Ș, Ț and spaces are allowed.
+Enter the message: Salut lume
+...
+Pairs:  SA LU TL UM EX
+Result: MĂMȚCS1UĂW
+\end{lstlisting}
+
+\shot{3}{The program rejecting invalid input}
+
+Every wrong input is rejected with a message that shows the allowed range of characters, and the program asks again instead of stopping. The last message, \texttt{SALUTLUME}, has 9 letters, so an \texttt{X} was added to complete the last pair \texttt{EX}. In decryption mode an odd-length cryptogram or a character such as \texttt{7}, which is not in the matrix, is rejected in the same way.
+
+\newpage
+\section*{Conclusions}
+\addcontentsline{toc}{section}{Conclusions}
+
+In this laboratory work I implemented the Playfair cipher for the Romanian alphabet. The main difficulty was that 31 letters do not fit in the classic $5 \times 5$ matrix. Merging letters, as \texttt{J} and \texttt{I} are merged in English, would have destroyed the diacritics, which carry meaning in Romanian. A $6 \times 6$ matrix keeps every letter, and its five free cells are filled with digits. The cost is that the cryptogram can contain digits, so the decryption input has to accept them.
+
+Because Playfair encrypts pairs, the same letter is encrypted differently depending on its neighbour: in the example the letter \texttt{A} became \texttt{G} in \texttt{AC}, \texttt{LA} and \texttt{BA}, but \texttt{D} in \texttt{DA}, and in \texttt{SA} of the last example it became \texttt{\u{A}}. This hides the single-letter frequencies that make monoalphabetic ciphers easy to break. Digram frequencies, however, are still visible, which is why Playfair is considered insecure today.
+
+The implementation also showed how symmetric the algorithm is. Encryption and decryption are the same function with the direction of the shift reversed, and the rectangle rule is its own inverse. The only step that cannot be undone automatically is the preparation of the text: the padding letters and the spaces have to be restored by the reader, using knowledge of the language.
+
+\end{document}
